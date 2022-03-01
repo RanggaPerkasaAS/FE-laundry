@@ -1,6 +1,7 @@
 import { Modal } from "bootstrap";
 import React from "react";
 import axios from "axios";
+import { authorization } from "../config";
 
 class Users extends React.Component{
     constructor(){
@@ -58,7 +59,7 @@ class Users extends React.Component{
             // temp.push(data);
             // this.setState({userss:temp})
             
-            axios.post(endpoint,data)
+            axios.post(endpoint,data,authorization)
             .then(response => {
                 window.alert(response.data.message)
                 this.getData()
@@ -84,7 +85,7 @@ class Users extends React.Component{
                 password: this.state.password,
                 role: this.state.role
             }
-            axios.put(endpoint,data)
+            axios.put(endpoint,data,authorization)
             .then((response) => {
               window.alert(response.data.message)
               this.getData()
@@ -120,7 +121,7 @@ class Users extends React.Component{
             // this.setState({userss: temp})
             let endpoint = "http://localhost:8000/users/" + id_user
 
-            axios.delete(endpoint)
+            axios.delete(endpoint,authorization)
             .then((response) =>{
               window.alert(response.data.message)
               this.getData()
@@ -131,7 +132,7 @@ class Users extends React.Component{
 
     getData(){
         let endpoint = "http://localhost:8000/users"
-        axios.get(endpoint)
+        axios.get(endpoint,authorization)
         .then(response => {
             this.setState({userss: response.data})
         })

@@ -1,6 +1,7 @@
 import { Modal } from "bootstrap";
 import React from "react";
 import axios from "axios";
+import { authorization } from "../config";
 
 class Paket extends React.Component {
   constructor() {
@@ -58,7 +59,7 @@ class Paket extends React.Component {
       // temp.push(data);
       // this.setState({ pakets: temp });
 
-      axios.post(endpoint,data)
+      axios.post(endpoint,data,authorization)
       .then(response => {
         window.alert(response.data.message)
         this.getData()
@@ -81,7 +82,7 @@ class Paket extends React.Component {
         harga: this.state.harga,
       };
 
-      axios.put(endpoint,data)
+      axios.put(endpoint,data,authorization)
       .then((response) => {
         window.alert(response.data.message)
         this.getData()
@@ -116,7 +117,7 @@ class Paket extends React.Component {
       // this.setState({ pakets: temp });
       let endpoint = "http://localhost:8000/paket/" + id_paket;
 
-      axios.delete(endpoint)
+      axios.delete(endpoint,authorization)
       .then((response) =>{
         window.alert(response.data.message)
         this.getData()
@@ -126,7 +127,7 @@ class Paket extends React.Component {
   }
   getData(){
     let endpoint = "http://localhost:8000/paket"
-    axios.get(endpoint)
+    axios.get(endpoint,authorization)
     .then(response => {
       this.setState({pakets: response.data})
     })

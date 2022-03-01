@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { formatNumber } from "../config";
+import { formatNumber, authorization } from "../config";
 
 export default class Dashboard extends React.Component{
     constructor(){
@@ -19,7 +19,7 @@ export default class Dashboard extends React.Component{
 
     getSummary(){
         let endpoint = `http://localhost:8000/member`
-        axios.get(endpoint)
+        axios.get(endpoint,authorization)
         .then(response => {
             this.setState({jumlahMember: response.data.length})
         })
@@ -27,7 +27,7 @@ export default class Dashboard extends React.Component{
 
         //paket
         endpoint = `http://localhost:8000/paket`
-        axios.get(endpoint)
+        axios.get(endpoint,authorization)
         .then(response => {
             this.setState({jumlahPaket: response.data.length})
         })
@@ -35,7 +35,7 @@ export default class Dashboard extends React.Component{
 
         //transaksi
         endpoint = `http://localhost:8000/transaksi`
-        axios.get(endpoint)
+        axios.get(endpoint, authorization)
         .then(response => {
             let dataTransaksi = response.data
             let income = 0

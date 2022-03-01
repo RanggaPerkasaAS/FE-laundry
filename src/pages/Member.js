@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal } from "bootstrap";
 import axios from "axios";
-import baseUrl from "../config";
+import {baseUrl , authorization} from "../config";
 
 class Member extends React.Component {
   constructor() {
@@ -77,7 +77,7 @@ class Member extends React.Component {
       // this.setState({members: temp})
 
       axios
-        .post(endpoint, data)
+        .post(endpoint, data,authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -106,7 +106,7 @@ class Member extends React.Component {
       };
 
       axios
-        .put(endpoint, data)
+        .put(endpoint, data,authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -146,7 +146,7 @@ class Member extends React.Component {
       let endpoint = "http://localhost:8000/member/" + id_member;
 
       axios
-        .delete(endpoint)
+        .delete(endpoint ,authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -158,7 +158,7 @@ class Member extends React.Component {
   getData() {
     let endpoint = "http://localhost:8000/member";
     axios
-      .get(endpoint)
+      .get(endpoint, authorization)
       .then((response) => {
         this.setState({ members: response.data });
       })
