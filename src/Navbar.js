@@ -9,7 +9,7 @@ function Logout() {
 export default function Navbar(props) {
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark  mb-2">
         <div className="container-fluid">
           <a href="#" className="navbar-brand">
             Loundree

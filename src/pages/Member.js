@@ -39,6 +39,7 @@ class Member extends React.Component {
         },
       ],
     };
+    //mengecek keberadaan token 
     if(!localStorage.getItem("token")){
       window.location.href = "/login"
     }
@@ -58,7 +59,7 @@ class Member extends React.Component {
     });
   }
   simpanData(event) {
-    event.preventDefault(); //preventdefault untuk mencegah aksi default dari form submit
+    event.preventDefault(); //preventdefault untuk mencegah aksi default(reload page) dari form submit
 
     if (this.state.action === "tambah") {
       let endpoint = "http://localhost:8000/member";
