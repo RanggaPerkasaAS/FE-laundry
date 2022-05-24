@@ -1,16 +1,19 @@
 import { Modal } from "bootstrap";
 import React from "react";
 import axios from "axios";
-import { authorization } from "../config";
+import { authorization, formatNumber } from "../config";
+import AllInboxIcon from "@material-ui/icons/AllInbox";
 
 class Paket extends React.Component {
   constructor() {
     super();
     this.state = {
+      masterPacks: [],
       id_paket: "",
       jenis_paket: "",
       harga: 0,
       visible: true,
+      search: "",
       pakets: [
         {
           id_paket: "1",
@@ -29,8 +32,8 @@ class Paket extends React.Component {
         },
       ],
     };
-    if(!localStorage.getItem("token")){
-      window.location.href = "/login"
+    if (!localStorage.getItem("token")) {
+      window.location.href = "/login";
     }
   }
   tambahData() {
@@ -48,7 +51,7 @@ class Paket extends React.Component {
     event.preventDefault();
 
     if (this.state.action === "tambah") {
-      let endpoint = "http://localhost:8000/paket"
+      let endpoint = "http://localhost:8000/paket";
       let data = {
         id_paket: this.state.id_paket,
         jenis_paket: this.state.jenis_paket,
@@ -59,12 +62,13 @@ class Paket extends React.Component {
       // temp.push(data);
       // this.setState({ pakets: temp });
 
-      axios.post(endpoint,data,authorization)
-      .then(response => {
-        window.alert(response.data.message)
-        this.getData()
-      })
-      .catch(error => console.log(error))
+      axios
+        .post(endpoint, data, authorization)
+        .then((response) => {
+          window.alert(response.data.message);
+          this.getData();
+        })
+        .catch((error) => console.log(error));
       this.modalPaket.hide();
     } else if (this.state.action === "ubah") {
       // let temp = this.state.pakets;
@@ -75,19 +79,20 @@ class Paket extends React.Component {
       // temp[index].harga = this.state.harga;
 
       // this.setState({ pakets: temp });
-      let endpoint = "http://localhost:8000/paket/" + this.state.id_paket
+      let endpoint = "http://localhost:8000/paket/" + this.state.id_paket;
       let data = {
         id_paket: this.state.id_paket,
         jenis_paket: this.state.jenis_paket,
         harga: this.state.harga,
       };
 
-      axios.put(endpoint,data,authorization)
-      .then((response) => {
-        window.alert(response.data.message)
-        this.getData()
-      })
-      .catch((error) => console.log(error))
+      axios
+        .put(endpoint, data, authorization)
+        .then((response) => {
+          window.alert(response.data.message);
+          this.getData();
+        })
+        .catch((error) => console.log(error));
       this.modalPaket.hide();
     }
   }
@@ -117,84 +122,120 @@ class Paket extends React.Component {
       // this.setState({ pakets: temp });
       let endpoint = "http://localhost:8000/paket/" + id_paket;
 
-      axios.delete(endpoint,authorization)
-      .then((response) =>{
-        window.alert(response.data.message)
-        this.getData()
-      })
-      .catch((error) => console.log(error));
+      axios
+        .delete(endpoint, authorization)
+        .then((response) => {
+          window.alert(response.data.message);
+          this.getData();
+        })
+        .catch((error) => console.log(error));
     }
   }
-  getData(){
-    let endpoint = "http://localhost:8000/paket"
-    axios.get(endpoint,authorization)
-    .then(response => {
-      this.setState({pakets: response.data})
-    })
-    .catch(error => console.log(error))
+  getData() {
+    let endpoint = "http://localhost:8000/paket";
+    axios
+      .get(endpoint, authorization)
+      .then((response) => {
+        this.setState({ pakets: response.data });
+        this.setState({ masterPacks: response.data });
+      })
+      .catch((error) => console.log(error));
   }
 
-  componentDidMount(){
-    this.getData()
-    let user = JSON.parse(localStorage.getItem("user"))
-    if(user.role === 'admin'){
+  searching(ev) {
+    let code = ev.keyCode;
+    if (code === 13) {
+      let data = this.state.masterPacks;
+      let found = data.filter((it) =>
+        it.jenis_paket.toLowerCase().includes(this.state.search.toLowerCase())
+      );
+      this.setState({ pakets: found });
+    }
+  }
+
+  componentDidMount() {
+    this.getData();
+    let user = JSON.parse(localStorage.getItem("user"));
+    if (user.role === "admin") {
       this.setState({
-        visible:true
-      })
-    }else{
+        visible: true,
+      });
+    } else {
       this.setState({
-        visible:false
-      })
+        visible: false,
+      });
     }
   }
   render() {
     return (
       <div className="container">
         <div className="card">
-          <div className="card-header bg-info">
-            <h3 className="text-white text-center">List Paket</h3>
-          </div>
           <div className="card-body">
-            <ul className="list-group">
-              {this.state.pakets.map((paket) => (
-                <li className="list-group-item">
-                  <div className="row">
-                    <div className="col-lg-5">
-                      <small className="text-info">Jenis Paket</small>
-                      <br></br>
-                      <h6>{paket.jenis_paket}</h6>
-                    </div>
-                    <div className="col-lg-5">
-                      <small className="text-info">Harga</small>
-                      <br></br>
-                      <h6>Rp {paket.harga}</h6>
-                    </div>
-                    <div className="col-lg-2 justify-content-center align-self-center">
-                      <div>
-                        <button
-                          className={`btn btn-sm btn-warning mx-2 ${this.state.visible ? `` : `d-none`}`}
-                          onClick={() => this.ubahData(paket.id_paket)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className={`btn btn-sm btn-danger mx-2 ${this.state.visible ? `` : `d-none`}`}
-                          onClick={() => this.hapusData(paket.id_paket)}
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <button
-              className={`btn btn-sm btn-info my-3 text-white ${this.state.visible ? `` : `d-none`}`}
-              onClick={() => this.tambahData()}
-            >
-              Tambah data Paket
-            </button>
+            <h3 className="tittleTable">
+              <AllInboxIcon></AllInboxIcon> List Paket
+            </h3>
+            <hr id="line"></hr>
+            <div className="row">
+              <div className="col-3">
+                <input
+                  className="form-control"
+                  type="text"
+                  placeholder="Cari data paket"
+                  value={this.state.search}
+                  onChange={(ev) => this.setState({ search: ev.target.value })}
+                  onKeyUp={(ev) => this.searching(ev)}
+                ></input>
+              </div>
+              <div className="col-8"></div>
+              <div className="col-1">
+                <button
+                  id="tambah"
+                  className={`btn btn-sm text-white ${
+                    this.state.visible ? `` : `d-none`
+                  }`}
+                  onClick={() => this.tambahData()}
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Jenis Paket</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.pakets.map((paket) => (
+                  <tr>
+                    <td>{paket.jenis_paket}</td>
+                    <td>Rp {formatNumber(paket.harga)}</td>
+                    <td>
+                      <button
+                        id="edit"
+                        className={`btn btn-sm btn-warning mx-2 ${
+                          this.state.visible ? `` : `d-none`
+                        }`}
+                        onClick={() => this.ubahData(paket.id_paket)}
+                      >
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button
+                        id="hapus"
+                        className={`btn btn-sm  mx-2 ${
+                          this.state.visible ? `` : `d-none`
+                        }`}
+                        onClick={() => this.hapusData(paket.id_paket)}
+                      >
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -202,13 +243,14 @@ class Paket extends React.Component {
         <div className="modal" id="modal_paket">
           <div className="modal-dialog modal-md">
             <div className="modal-content">
-              <div className="modal-header bg-info">
-                <h4 className="text-white">Form data Paket</h4>
-              </div>
               <div className="modal-body">
+                <h3 id="headerTittle">
+                  <AllInboxIcon></AllInboxIcon> Form Pengisian Data Paket
+                </h3>
+                <hr id="line"></hr>
                 <form onSubmit={(ev) => this.simpanData(ev)}>
-                  Jenis Paket
                   <input
+                    placeholder="Jenis Paket"
                     type="text"
                     className="form-control mb-2"
                     value={this.state.jenis_paket}
@@ -216,14 +258,18 @@ class Paket extends React.Component {
                       this.setState({ jenis_paket: ev.target.value })
                     }
                   ></input>
-                  Harga
                   <input
+                    placeholder="Harga"
                     type="text"
                     className="form-control mb-2"
                     value={this.state.harga}
                     onChange={(ev) => this.setState({ harga: ev.target.value })}
                   ></input>
-                  <button className="btn btn-success" type="submit">
+                  <button
+                    id="simpanModal"
+                    className="btn btn-success"
+                    type="submit"
+                  >
                     Simpan
                   </button>
                 </form>

@@ -8,6 +8,9 @@ const authorization = {
         Authorization : `Bearer ${localStorage.getItem("token")}`
     }
 }
+const formatDate = (tanggal) => {
+    return new Date(tanggal).toLocaleDateString()
+}
 export{
-    baseUrl, formatNumber, authorization
+    baseUrl, formatNumber, authorization, formatDate
 }

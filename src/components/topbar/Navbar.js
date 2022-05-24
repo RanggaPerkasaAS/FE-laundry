@@ -1,18 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "../../index.css";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 function Logout() {
-    localStorage.removeItem("user")
-    localStorage.removeItem("token")
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
 }
 
 export default function Navbar(props) {
+  if (!localStorage.getItem("user")) {
+    window.location.href = "/login";
+  }
+  let halo = JSON.parse(localStorage.getItem(`user`));
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark  mb-2">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light mb-3">
         <div className="container-fluid">
-          <a href="#" className="navbar-brand">
-            Loundree
+          <a href="/" className="navbar-brand">
+            <i class="fa-solid fa-shirt"></i> Cuci'in
           </a>
 
           {/* button toogler */}
@@ -27,7 +33,7 @@ export default function Navbar(props) {
           {/* define menu */}
           <div className="collapse navbar-collapse" id="myNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
+            <li className="nav-item">
                 <Link to="/" className="nav-link">
                   Dashboard
                 </Link>
@@ -57,10 +63,24 @@ export default function Navbar(props) {
                   Transaksi baru
                 </Link>
               </li>
-                <button className="btn btn-outline-light btn-md">
-                  <Link to="/login" className="btn-link" onClick={() => Logout()}>Logout</Link>
-                </button> 
+              <li class="nav-item">
+                <Link
+                  to="/login"
+                  className="nav-link"
+                  id="logout"
+                  onClick={() => Logout()}
+                >
+                  <i class="fa-solid fa-right-from-bracket iconlogout"></i>{" "}
+                  Logout
+                </Link>
+              </li>
             </ul>
+          </div>
+          <div className="inline" >
+            <a id="welcomeUser">
+              Hai, {halo.role} {halo.nama}
+              <AccountCircleIcon />
+            </a>
           </div>
         </div>
       </nav>

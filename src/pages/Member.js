@@ -1,12 +1,14 @@
 import React from "react";
 import { Modal } from "bootstrap";
 import axios from "axios";
-import {baseUrl , authorization} from "../config";
+import { baseUrl, authorization } from "../config";
 
 class Member extends React.Component {
   constructor() {
     super();
     this.state = {
+      masterPacks: [],
+      search: "",
       id_member: "",
       nama: "",
       alamat: "",
@@ -39,9 +41,9 @@ class Member extends React.Component {
         },
       ],
     };
-    //mengecek keberadaan token 
-    if(!localStorage.getItem("token")){
-      window.location.href = "/login"
+    //mengecek keberadaan token
+    if (!localStorage.getItem("token")) {
+      window.location.href = "/login";
     }
   }
   tambahData() {
@@ -54,7 +56,7 @@ class Member extends React.Component {
       id_member: Math.random(1, 10000),
       nama: "",
       alamat: "",
-      jenis_kelamin: "Wanita",
+      jenis_kelamin: "",
       telepon: "",
     });
   }
@@ -78,7 +80,7 @@ class Member extends React.Component {
       // this.setState({members: temp})
 
       axios
-        .post(endpoint, data,authorization)
+        .post(endpoint, data, authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -107,7 +109,7 @@ class Member extends React.Component {
       };
 
       axios
-        .put(endpoint, data,authorization)
+        .put(endpoint, data, authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -147,7 +149,7 @@ class Member extends React.Component {
       let endpoint = "http://localhost:8000/member/" + id_member;
 
       axios
-        .delete(endpoint ,authorization)
+        .delete(endpoint, authorization)
         .then((response) => {
           window.alert(response.data.message);
           this.getData();
@@ -162,91 +164,112 @@ class Member extends React.Component {
       .get(endpoint, authorization)
       .then((response) => {
         this.setState({ members: response.data });
+        this.setState({masterPacks: response.data})
       })
       .catch((error) => console.log(error));
+  }
+
+  searching(ev) {
+    let code = ev.keyCode; 
+    if (code === 13) {
+      let data = this.state.masterPacks;
+      let found = data.filter(it => 
+        it.nama.toLowerCase().includes(this.state.search.toLowerCase()))
+      this.setState({ members : found });
+    }
   }
 
   componentDidMount() {
     //FUNGSI INI DIJALANKAN SETELAH FUNGSI RENDER DIJALANKAN
     this.getData();
-    let user = JSON.parse(localStorage.getItem("user"))
+    let user = JSON.parse(localStorage.getItem("user"));
     //cara pertama
     this.setState({
-      role : user.role
-    })
+      role: user.role,
+    });
     //cara kedua
-    if(user.role === 'admin' || user.role === 'kasir'){
+    if (user.role === "admin" || user.role === "kasir") {
       this.setState({
-        visible:true
-      })
-    }else{
+        visible: true,
+      });
+    } else {
       this.setState({
-        visible:false
-      })
+        visible: false,
+      });
     }
   }
 
-  showAddButton(){
-    if(this.state.role === 'admin' || this.state.role === 'kasir'){
-      return(
+  showAddButton() {
+    if (this.state.role === "admin" || this.state.role === "kasir") {
+      return (
         <button
-              className="btn btn-sm btn-success my-3"
-              onClick={() => this.tambahData()}
-            >
-              Tambah data Member
-            </button>
-      )
+          id="tambah" className="btn btn-sm"
+          onClick={() => this.tambahData()}
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      );
     }
   }
   render() {
     return (
       <div className="container">
         <div className="card">
-          <div className="card-header bg-success">
-            <h3 className="text-white">List Member Laundry</h3>
-          </div>
           <div className="card-body">
-            <ul className="list-group">
-              {this.state.members.map((member) => (
-                <li className="list-group-item">
-                  <div className="row">
-                    <div className="col-lg-2">
-                      <small className="text-info">NAMA</small>
-                      <br></br> <h6>{member.nama}</h6>
-                    </div>
-                    <div className="col-lg-2">
-                      <small className="text-info">JENIS KELAMIN</small>
-                      <br></br> <h6>{member.jenis_kelamin}</h6>
-                    </div>
-                    <div className="col-lg-2">
-                      <small className="text-info">TELEPON</small>
-                      <br></br> <h6>{member.telepon}</h6>
-                    </div>
-                    <div className="col-lg-4">
-                      <small className="text-info">ALAMAT</small>
-                      <br></br> <h6>{member.alamat}</h6>
-                    </div>
-                    <div className="col-lg-2">
-                      <div>
-                        <button
-                          className= {`btn btn-sm btn-warning mx-2 ${this.state.visible ? `` : `d-none`}`}
-                          onClick={() => this.ubahData(member.id_member)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className={`btn btn-sm btn-danger mx-2 ${this.state.visible ? `` : `d-none`}`}
-                          onClick={() => this.hapusData(member.id_member)}
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            {this.showAddButton()}
+          <h3 className="tittleTable"><i class="fa-solid fa-users"></i> List Member</h3>
+          <hr id="line"></hr>
+          <div className="row">
+          <div className="col-3">
+              <input className="form-control" type="text" placeholder="Cari data Member" 
+              value={this.state.search} onChange={ev => this.setState({search: ev.target.value})} 
+              onKeyUp={(ev) => this.searching(ev)}></input>
+          </div>
+          <div className="col-8">
+
+          </div>
+          <div className="col-1">
+          {this.showAddButton()}
+          </div>
+          </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Jenis Kelamin</th>
+                  <th>Telepon</th>
+                  <th>Alamat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.members.map((member) => (
+                  <tr>
+                    <td>{member.nama}</td>
+                    <td>{member.jenis_kelamin}</td>
+                    <td>{member.telepon}</td>
+                    <td>{member.alamat}</td>
+                    <td>
+                      <button
+                        id="edit" className={`btn btn-sm btn-warning mx-2 ${
+                          this.state.visible ? `` : `d-none`
+                        }`}
+                        onClick={() => this.ubahData(member.id_member)}
+                      >
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button
+                        id="hapus"  className={`btn btn-sm  mx-2 ${
+                          this.state.visible ? `` : `d-none`
+                        }`}
+                        onClick={() => this.hapusData(member.id_member)}
+                      >
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -254,31 +277,30 @@ class Member extends React.Component {
         <div className="modal" id="modal_member">
           <div className="modal-dialog modal-md">
             <div className="modal-content">
-              <div className="modal-header bg-success">
-                <h4 className="text-white">Form data member</h4>
-              </div>
               <div className="modal-body">
+              <h3 id="headerTittle"><i class="fa-solid fa-users"></i> Form Pengisian Data Member</h3>
+              <hr id="line"></hr>
                 <form onSubmit={(ev) => this.simpanData(ev)}>
-                  Nama
                   <input
+                  placeholder="Nama"
                     type="text"
                     className="form-control mb-2"
                     value={this.state.nama}
                     onChange={(ev) => this.setState({ nama: ev.target.value })}
                   ></input>
-                  Jenis Kelamin
                   <select
-                    className="form-control mb-2"
+                    className="form-select mb-2"
                     value={this.state.jenis_kelamin}
                     onChange={(ev) =>
                       this.setState({ jenis_kelamin: ev.target.value })
                     }
                   >
+                    <option>---Pilih Jenis Kelamin---</option>
                     <option value="Wanita">Wanita</option>
                     <option value="Pria">Pria</option>
                   </select>
-                  Telepon
                   <input
+                  placeholder="Nomor Telepon"
                     type="text"
                     className="form-control mb-2"
                     value={this.state.telepon}
@@ -286,8 +308,8 @@ class Member extends React.Component {
                       this.setState({ telepon: ev.target.value })
                     }
                   ></input>
-                  Alamat
                   <input
+                  placeholder="Alamat"
                     type="text"
                     className="form-control mb-2"
                     value={this.state.alamat}
@@ -295,7 +317,7 @@ class Member extends React.Component {
                       this.setState({ alamat: ev.target.value })
                     }
                   ></input>
-                  <button className="btn btn-success" type="submit">
+                  <button id="simpanModal" className="btn btn-success" type="submit">
                     Simpan
                   </button>
                 </form>

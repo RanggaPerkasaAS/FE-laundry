@@ -4,11 +4,8 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle";
-import Transaksi from "./pages/Transaksi";
-import FormTransaksi from "./pages/FormTransaksi";
-import Login from "./pages/Login";
-
+import "@fortawesome/fontawesome-free/css/all.min.css"
+import $ from 'jquery';
 
 ReactDOM.render(
   <React.StrictMode>

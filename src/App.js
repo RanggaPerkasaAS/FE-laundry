@@ -7,7 +7,7 @@ import FormTransaksi from "./pages/FormTransaksi"
 import Transaksi from "./pages/Transaksi"
 import Login from "./pages/Login";
 import { BrowserRouter, Route, Routes} from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "./components/topbar/Navbar";
 import Dashboard from "./pages/Dashboard";
 
 export default function App(){
